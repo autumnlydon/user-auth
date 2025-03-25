@@ -1,6 +1,7 @@
 // index.js is used for setting up backend server that will listen for incoming requests and send responses
 // we wil also be conecting routes to the server here
 require("dotenv").config();
+const mongoose = require("mongoose");
 
 const express = require("express");
 const authRoutes = require("./routes/auth");
@@ -15,6 +16,16 @@ app.get("/", (req, res) => {
     res.send("Server is up and running");
 });
 
-app.listen(3001, () => {
-    console.log("Server is running on port 3001");
-});
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB Atlas");
+    app.listen(3001, () => {
+      console.log("Server is running on port 3001");
+    });
+  })
+  .catch(err => {
+    console.error("MongoDB connection failed:", err);
+  });

@@ -1,13 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-const users = []; // fake database for now
 
 exports.signup = async (req, res) => {
-    const { email, password } = req.body
+    const { email, password, firstName, lastName } = req.body
 
     // check if a user exists in the database
-    const existingUser = users.find((user) => user.email.toLowerCase() === email.toLowerCase());
+    const existingUser = await User.findOne({ email: email });
     if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
     }
@@ -17,19 +17,17 @@ exports.signup = async (req, res) => {
 
     // create a new user
 
-    const newUser = {
-        id: users.length + 1,
+    const newUser = await User.create({
         email: email,
         password: hashedPassword,
-    }
+    })
 
     // push new user to users array
-    users.push(newUser);
     console.log("new user successfully created")
 
     // generate jwt token for user auth
     const token = jwt.sign(
-        { id: newUser.id,
+        { id: newUser._id,
             email: newUser.email
          },
         process.env.JWT_SECRET,
@@ -43,29 +41,33 @@ exports.login = async (req, res) => {
     const {email, password} = req.body;
 
     // check if user exists in the database
-    console.log("📦 All current users:", users);
-
-    const user = users.find((user => user.email.toLowerCase() === email.toLowerCase()));
-    if (!user) {
-        return res.status(404).json({message: "User not found"})
-    }
-
-    // compare if password matches what is in the database
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-        return res.status(401).json({message: "Invalid password"})
-    }
-
-    // if it is a match!!! generate jwt for user
-
-    const token = jwt.sign(
-        { id: user.id,
-            email: user.email
-         },
-        process.env.JWT_SECRET,
-        { expiresIn: "3d" }
-    )
-
-    // send response with user data and token
-    res.status(200).json({ token })
+    try {
+        // 1. Find the user by email
+        const user = await User.findOne({ email });
+    
+        if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+    
+        // 2. Compare the plain password with the hashed password
+        const isMatch = await bcrypt.compare(password, user.password);
+    
+        if (!isMatch) {
+          return res.status(401).json({ message: 'Invalid password' });
+        }
+    
+        // 3. Create a token
+        const token = jwt.sign(
+          { id: user._id, email: user.email },
+          process.env.JWT_SECRET,
+          { expiresIn: '3d' }
+        );
+    
+        // 4. Send back the token
+        res.status(200).json({ token });
+    
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Something went wrong' });
+      }
 }
