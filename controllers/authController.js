@@ -20,6 +20,8 @@ exports.signup = async (req, res) => {
     const newUser = await User.create({
         email: email,
         password: hashedPassword,
+        firstName: firstName,
+        lastName: lastName,
     })
 
     // push new user to users array
