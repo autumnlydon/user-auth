@@ -2,11 +2,16 @@
 // we wil also be conecting routes to the server here
 require("dotenv").config();
 const mongoose = require("mongoose");
-
 const express = require("express");
 const authRoutes = require("./routes/auth");
+const cors = require("cors");
 
 const app = express();
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 
 app.use(express.json())
 
