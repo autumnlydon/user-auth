@@ -34,10 +34,16 @@ export default function Dashboard() {
         <div>
             <h1>Dashboard</h1>
             {dashboardData ? (
-                <p>{dashboardData.message}</p>
+                <>
+                    <p>{dashboardData.message}</p>
+                    <p>First Name: {dashboardData.firstName}</p>
+                    <p>Last Name: {dashboardData.lastName}</p>
+                    <p>Email: {dashboardData.email}</p>
+                </>
             ) : (
                 <p>Loading...</p>
             )}
+
         </div>
     )
 }

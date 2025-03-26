@@ -17,7 +17,10 @@ router.get("/me", verifyToken, (req, res) => {
 
 router.get("/dashboard", verifyToken, (req, res) => {
     res.json({
-        message: `Welcome to your Dashboard, ${req.user.email}!`,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        email: req.user.email,
+        message: `Welcome to your Dashboard, ${req.user.firstName} ${req.user.lastName}!`,
     })
 })
 
