@@ -29,9 +29,12 @@ exports.signup = async (req, res) => {
 
     // generate jwt token for user auth
     const token = jwt.sign(
-        { id: newUser._id,
-            email: newUser.email
-         },
+        { 
+            id: newUser._id,
+            email: newUser.email,
+            firstName: newUser.firstName,
+            lastName: newUser.lastName
+        },
         process.env.JWT_SECRET,
         { expiresIn: "3d" }
     )
@@ -40,36 +43,31 @@ exports.signup = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    const {email, password} = req.body;
-
-    // check if user exists in the database
+    const { email, password } = req.body;
     try {
-        // 1. Find the user by email
         const user = await User.findOne({ email });
-    
         if (!user) {
-          return res.status(404).json({ message: 'User not found' });
+            return res.status(400).json({ message: "User not found" });
         }
-    
-        // 2. Compare the plain password with the hashed password
+
         const isMatch = await bcrypt.compare(password, user.password);
-    
         if (!isMatch) {
-          return res.status(401).json({ message: 'Invalid password' });
+            return res.status(400).json({ message: "Invalid credentials" });
         }
-    
-        // 3. Create a token
+
         const token = jwt.sign(
-          { id: user._id, email: user.email },
-          process.env.JWT_SECRET,
-          { expiresIn: '3d' }
+            { 
+                id: user._id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "3d" }
         );
-    
-        // 4. Send back the token
-        res.status(200).json({ token });
-    
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Something went wrong' });
-      }
+
+        res.json({ token });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
 }
