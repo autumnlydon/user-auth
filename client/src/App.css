@@ -61,3 +61,17 @@
   background-color: #357abd;
 }
 
+.homepage-btn {
+  margin: 10px;
+  padding: .75rem 1.5rem;
+  border-radius: 5px;
+  background-color: #264471;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+.homepage-btn:hover {
+  background-color: #1e375b;
+}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 
 export default function Signup() {
     const [formData, setFormData] = useState({
@@ -7,6 +8,8 @@ export default function Signup() {
         email: '',
         password: ''
     });
+
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({
@@ -28,6 +31,13 @@ export default function Signup() {
 
         const data = await response.json();
         console.log(data);
+
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+            navigate('/dashboard');
+        } else {
+            alert('Signup failed');
+        }
     };
 
     return (

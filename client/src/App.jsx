@@ -1,13 +1,18 @@
 import Signup from './Signup'
 import './App.css'
-
+import { Routes, Route } from 'react-router-dom'
+import Login from './Login'
+import Homepage from './Homepage'
+import Dashboard from './Dashboard'
 function App() {
 
   return (
-    <div className="Main Page">
-      <h1>User Auth App</h1>
-      <Signup />
-    </div>
+    <Routes>
+      <Route path="/" element={<Homepage />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+    </Routes>
   )
 }
 
